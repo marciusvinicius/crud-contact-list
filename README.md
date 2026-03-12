@@ -16,6 +16,9 @@ docker compose up --build
 
 The API listens on `http://localhost:8000`.
 
+- **Live API**:
+  [Live API](https://crud-contact-list-2.onrender.com/)
+
 #### Seed with sample data
 
 With the API running, you can create 1000 random contacts to test the UI:
@@ -36,7 +39,7 @@ This uses the `/contacts` endpoint and fills the database.
 The UI calls the FastAPI backend at `http://localhost:8000`:
 
 - **Live UI**:
-- ([LiveUI](https://crud-contact-list-ui.onrender.com/))
+- [LiveUI](https://crud-contact-list-ui.onrender.com/)
 
 ### Architecture overview
 
