@@ -322,6 +322,11 @@ async function saveContact() {
     return;
   }
 
+  if (emails.length === 0) {
+    showStatusMessage("At least one email is required.", "error");
+    return;
+  }
+
   const emailValidation = validateEmails(emails);
   if (!emailValidation.ok) {
     showEmailError(emailValidation.message);
