@@ -199,6 +199,14 @@ function renderContactsList() {
       deleteSelectedBtn.classList.add("hidden");
     }
   }
+
+  if (exportSelectedBtn) {
+    if (multiSelectedIds.size > 0 || selectedContactId !== null) {
+      exportSelectedBtn.classList.remove("hidden");
+    } else {
+      exportSelectedBtn.classList.add("hidden");
+    }
+  }
 }
 
 async function selectContact(id, updateAnchor = true) {
