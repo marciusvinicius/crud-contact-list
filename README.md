@@ -6,7 +6,7 @@
 
 ```bash
 pip install -r requirements.txt
-uvicorn backend:app --reload
+uvicorn main:app --reload
 ```
 
 The API listens on `http://localhost:8000`.
