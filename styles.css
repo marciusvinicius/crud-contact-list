@@ -1,0 +1,325 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f5f7fb;
+  color: #1f2933;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background: #111827;
+  color: #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sidebar-search {
+  margin-bottom: 10px;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #374151;
+  background: #111827;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.sidebar-search input::placeholder {
+  color: #6b7280;
+}
+
+.sidebar-search input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.4);
+}
+
+.sidebar-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.contacts-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.sidebar-footer {
+  margin-top: 12px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.contact-item:hover {
+  background: #1f2937;
+}
+
+.contact-item.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.contact-item-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.contact-select-checkbox {
+  flex-shrink: 0;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+}
+
+.contact-form {
+  flex: 1;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.welcome-panel-content {
+  max-width: 520px;
+  background: #0b1120;
+  color: #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.5);
+}
+
+.welcome-panel-content h1 {
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.welcome-panel-content p {
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #d1d5db;
+}
+
+.status-message {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+}
+
+.status-message.success {
+  background: #ecfdf3;
+  border-color: #4ade80;
+  color: #166534;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.name-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.name-row .field-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.field-group label {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  color: #4b5563;
+}
+
+.field-group input {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+.field-group input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.emails-section {
+  margin-top: 16px;
+}
+
+.emails-header h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.emails-list {
+  list-style: none;
+  margin-bottom: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.email-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.email-item input {
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.email-item input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+.email-remove-btn {
+  margin-left: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: none;
+  background: #f87171;
+  color: white;
+  font-size: 0.75rem;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.email-item:hover .email-remove-btn {
+  opacity: 1;
+}
+
+.email-remove-btn:hover {
+  transform: translateY(-1px);
+  background: #ef4444;
+}
+
+.btn {
+  border-radius: 999px;
+  border: none;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-small {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.actions-left {
+  flex: 1;
+}
+
+.actions-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
+.field-error {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #dc2626;
+}
