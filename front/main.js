@@ -186,7 +186,18 @@ function renderContactsList() {
         selectContact(contact.id, false);
         renderContactsList();
       } else {
-        selectContact(contact.id);
+        // If there are already selected contacts, toggle this contact
+        // in the multi-selection set instead of resetting selection.
+        if (multiSelectedIds.size > 0) {
+          if (multiSelectedIds.has(contact.id)) {
+            multiSelectedIds.delete(contact.id);
+          } else {
+            multiSelectedIds.add(contact.id);
+          }
+          selectContact(contact.id, false);
+        } else {
+          selectContact(contact.id);
+        }
       }
     });
     contactsListEl.appendChild(li);
