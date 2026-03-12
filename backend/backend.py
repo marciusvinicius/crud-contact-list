@@ -1,8 +1,11 @@
 from typing import List, Optional
 
+import csv
+import io
 import sqlite3
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 
@@ -114,17 +117,11 @@ def on_startup() -> None:
     init_db()
 
 
-# CORS configuration
-origins = [
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-    "https://crud-contact-list-ui.onrender.com",
-]
-
+# CORS configuration (open for this demo API)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -254,6 +251,46 @@ def delete_contact(contact_id: int) -> None:
         conn.execute("DELETE FROM contacts WHERE id = ?", (contact_id,))
         conn.commit()
         return None
+    finally:
+        conn.close()
+
+
+@app.get("/contacts-export")
+def export_contacts(ids: List[int] = Query(...)) -> StreamingResponse:
+    if not ids:
+        raise HTTPException(status_code=400, detail="No contact ids provided")
+
+    conn = get_connection()
+    try:
+        placeholders = ",".join("?" for _ in ids)
+        rows = conn.execute(
+            f"""
+            SELECT id, first_name, last_name
+            FROM contacts
+            WHERE id IN ({placeholders})
+            ORDER BY last_name, first_name, id
+            """,
+            ids,
+        ).fetchall()
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["id", "first_name", "last_name", "emails"])
+
+        for row in rows:
+            contact = row_to_contact(conn, row)
+            writer.writerow(
+                [
+                    contact.id,
+                    contact.first_name,
+                    contact.last_name,
+                    ";".join(contact.emails),
+                ]
+            )
+
+        output.seek(0)
+        headers = {"Content-Disposition": 'attachment; filename="contacts.csv"'}
+        return StreamingResponse(output, media_type="text/csv", headers=headers)
     finally:
         conn.close()
 

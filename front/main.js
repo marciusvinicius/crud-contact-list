@@ -1,4 +1,5 @@
 const API_BASE = "https://crud-contact-list-2.onrender.com"
+//const API_BASE = "http://localhost:8000"
 const contactsListEl = document.getElementById("contacts-list");
 const addContactBtn = document.getElementById("add-contact-btn");
 const firstNameInput = document.getElementById("first-name");
@@ -9,6 +10,7 @@ const saveContactBtn = document.getElementById("save-contact-btn");
 const deleteContactBtn = document.getElementById("delete-contact-btn");
 const emailErrorId = "email-error-message";
 const deleteSelectedBtn = document.getElementById("delete-selected-btn");
+const exportSelectedBtn = document.getElementById("export-selected-btn");
 const searchInput = document.getElementById("search-input");
 const statusMessageEl = document.getElementById("status-message");
 const welcomePanelEl = document.getElementById("welcome-panel");
@@ -44,7 +46,7 @@ async function fetchContacts(query = "", reset = false) {
   }
 
   const url = `${API_BASE}/contacts?${params.toString()}`;
-  const res = await fetch(url);
+  const res = await fetch(url, { mode: "cors" });
   const batch = await res.json();
 
   if (reset) {
@@ -204,7 +206,7 @@ async function selectContact(id, updateAnchor = true) {
   if (updateAnchor) {
     selectionAnchorId = id;
   }
-  const res = await fetch(`${API_BASE}/contacts/${id}`);
+  const res = await fetch(`${API_BASE}/contacts/${id}`, { mode: "cors" });
   if (!res.ok) {
     return;
   }
@@ -335,12 +337,14 @@ async function saveContact() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      mode: "cors",
     });
   } else {
     res = await fetch(`${API_BASE}/contacts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      mode: "cors",
     });
   }
 
@@ -373,6 +377,7 @@ async function deleteSelectedContacts() {
     try {
       const res = await fetch(`${API_BASE}/contacts/${id}`, {
         method: "DELETE",
+        mode: "cors",
       });
       if (!res.ok && res.status !== 204) {
         console.error("Failed to delete contact", id, res.status);
@@ -397,6 +402,7 @@ async function deleteContact() {
 
   const res = await fetch(`${API_BASE}/contacts/${selectedContactId}`, {
     method: "DELETE",
+    mode: "cors",
   });
 
   if (!res.ok && res.status !== 204) {
@@ -406,6 +412,41 @@ async function deleteContact() {
 
   clearForm();
   await fetchContacts(currentSearchQuery, true);
+}
+
+async function exportSelectedContacts() {
+  let ids = [];
+  if (multiSelectedIds.size > 0) {
+    ids = Array.from(multiSelectedIds);
+  } else if (selectedContactId) {
+    ids = [selectedContactId];
+  }
+
+  if (!ids.length) {
+    showStatusMessage("Select at least one contact to export.", "error");
+    return;
+  }
+
+  const params = new URLSearchParams();
+  ids.forEach((id) => params.append("ids", String(id)));
+
+  const res = await fetch(`${API_BASE}/contacts-export?${params.toString()}`, {
+    mode: "cors",
+  });
+  if (!res.ok) {
+    showStatusMessage("Error exporting contacts.", "error");
+    return;
+  }
+
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "contacts.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
 }
 
 addContactBtn.addEventListener("click", () => {
@@ -426,6 +467,10 @@ deleteContactBtn.addEventListener("click", () => {
 
 deleteSelectedBtn.addEventListener("click", () => {
   deleteSelectedContacts().catch((e) => console.error(e));
+});
+
+exportSelectedBtn.addEventListener("click", () => {
+  exportSelectedContacts().catch((e) => console.error(e));
 });
 
 let searchDebounceId = null;
