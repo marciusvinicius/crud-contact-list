@@ -8,6 +8,11 @@
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+Using Docker:
+
+```bash
+docker compose up --build
+```
 
 The API listens on `http://localhost:8000`.
 
