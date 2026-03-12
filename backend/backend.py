@@ -130,7 +130,11 @@ app.add_middleware(
 
 
 @app.get("/contacts", response_model=List[Contact])
-def list_contacts(q: Optional[str] = Query(default=None)) -> List[Contact]:
+def list_contacts(
+    q: Optional[str] = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=500),
+    offset: int = Query(default=0, ge=0),
+) -> List[Contact]:
     conn = get_connection()
     try:
         if q:
@@ -144,12 +148,19 @@ def list_contacts(q: Optional[str] = Query(default=None)) -> List[Contact]:
                    OR lower(c.last_name) LIKE ?
                    OR lower(e.email) LIKE ?
                 ORDER BY c.last_name, c.first_name, c.id
+                LIMIT ? OFFSET ?
                 """,
-                (q_like, q_like, q_like),
+                (q_like, q_like, q_like, limit, offset),
             ).fetchall()
         else:
             rows = conn.execute(
-                "SELECT id, first_name, last_name FROM contacts ORDER BY last_name, first_name, id"
+                """
+                SELECT id, first_name, last_name
+                FROM contacts
+                ORDER BY last_name, first_name, id
+                LIMIT ? OFFSET ?
+                """,
+                (limit, offset),
             ).fetchall()
 
         return [row_to_contact(conn, row) for row in rows]

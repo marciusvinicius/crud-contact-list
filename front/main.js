@@ -1,4 +1,7 @@
-const API_BASE = process.env.API_BASE || "http://localhost:8000";
+const apiBaseMeta = document.querySelector('meta[name="api-base"]');
+const API_BASE =
+  (apiBaseMeta && apiBaseMeta.content && apiBaseMeta.content.trim()) ||
+  "http://localhost:8000";
 
 const contactsListEl = document.getElementById("contacts-list");
 const addContactBtn = document.getElementById("add-contact-btn");
@@ -20,16 +23,49 @@ let selectedContactId = null;
 let multiSelectedIds = new Set();
 let selectionAnchorId = null;
 let currentSearchQuery = "";
+const PAGE_SIZE = 50;
+let currentOffset = 0;
+let hasMoreContacts = true;
+let isLoadingContacts = false;
 
-async function fetchContacts(query = "") {
-  const url = query
-    ? `${API_BASE}/contacts?q=${encodeURIComponent(query)}`
-    : `${API_BASE}/contacts`;
+async function fetchContacts(query = "", reset = false) {
+  if (isLoadingContacts) return;
+
+  if (reset) {
+    currentOffset = 0;
+    hasMoreContacts = true;
+    contacts = [];
+  }
+
+  if (!hasMoreContacts) return;
+
+  isLoadingContacts = true;
+  const params = new URLSearchParams();
+  params.set("limit", String(PAGE_SIZE));
+  params.set("offset", String(currentOffset));
+  if (query) {
+    params.set("q", query);
+  }
+
+  const url = `${API_BASE}/contacts?${params.toString()}`;
   const res = await fetch(url);
-  contacts = await res.json();
+  const batch = await res.json();
+
+  if (reset) {
+    contacts = batch;
+  } else {
+    contacts = contacts.concat(batch);
+  }
+
+  currentOffset += batch.length;
+  if (batch.length < PAGE_SIZE) {
+    hasMoreContacts = false;
+  }
+
   renderContactsList();
   if (contacts.length === 0 && query) {
     clearForm();
+    isLoadingContacts = false;
     return;
   }
   if (selectedContactId) {
@@ -38,6 +74,7 @@ async function fetchContacts(query = "") {
       clearForm();
     }
   }
+  isLoadingContacts = false;
 }
 
 function selectAllContacts() {
@@ -320,7 +357,7 @@ async function saveContact() {
   const saved = await res.json();
   selectedContactId = saved.id;
   populateForm(saved);
-  await fetchContacts(currentSearchQuery);
+  await fetchContacts(currentSearchQuery, true);
   showStatusMessage("Contact saved successfully.", "success");
 }
 
@@ -354,7 +391,7 @@ async function deleteSelectedContacts() {
   }
 
   multiSelectedIds.clear();
-  await fetchContacts(currentSearchQuery);
+  await fetchContacts(currentSearchQuery, true);
 }
 
 async function deleteContact() {
@@ -372,7 +409,7 @@ async function deleteContact() {
   }
 
   clearForm();
-  await fetchContacts(currentSearchQuery);
+  await fetchContacts(currentSearchQuery, true);
 }
 
 addContactBtn.addEventListener("click", () => {
@@ -403,8 +440,18 @@ searchInput.addEventListener("input", (event) => {
     clearTimeout(searchDebounceId);
   }
   searchDebounceId = setTimeout(() => {
-    fetchContacts(currentSearchQuery).catch((e) => console.error(e));
+    fetchContacts(currentSearchQuery, true).catch((e) => console.error(e));
   }, 300);
+});
+
+contactsListEl.addEventListener("scroll", () => {
+  const threshold = 32;
+  if (
+    contactsListEl.scrollTop + contactsListEl.clientHeight >=
+    contactsListEl.scrollHeight - threshold
+  ) {
+    fetchContacts(currentSearchQuery).catch((e) => console.error(e));
+  }
 });
 
 document.addEventListener("keydown", (event) => {
@@ -440,7 +487,7 @@ document.addEventListener("keydown", (event) => {
 
 // Initial state
 clearForm();
-fetchContacts(currentSearchQuery).catch((e) => console.error(e));
+fetchContacts(currentSearchQuery, true).catch((e) => console.error(e));
 
 const WELCOME_STORAGE_KEY = "contacts_has_seen_welcome";
 if (welcomePanelEl && welcomeDismissBtn) {
