@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: . 
+      dockerfile: backend/Dockerfile
+    container_name: contacts-app
+    ports:
+      - 8000:8000
+    environment:
+      - API_BASE=http://backend:8000
+    networks:
+      - contacts-network
+  front:
+    build:
+      context: .
+      dockerfile: front/Dockerfile
+    container_name: contacts-front
+    ports:
+      - 80:80
+    networks:
+      - contacts-network
+    environment:
+      - API_BASE=http://backend:8000
+    depends_on:
+      - backend
+  
+networks:
+  contacts-network:
+    driver: bridge
