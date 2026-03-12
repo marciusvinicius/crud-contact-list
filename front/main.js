@@ -1,8 +1,4 @@
-const apiBaseMeta = document.querySelector('meta[name="api-base"]');
-const API_BASE =
-  (apiBaseMeta && apiBaseMeta.content && apiBaseMeta.content.trim()) ||
-  "http://localhost:8000";
-
+const API_BASE = "https://crud-contact-list-2.onrender.com"
 const contactsListEl = document.getElementById("contacts-list");
 const addContactBtn = document.getElementById("add-contact-btn");
 const firstNameInput = document.getElementById("first-name");
@@ -320,7 +316,7 @@ async function saveContact() {
   const emails = getEmailsFromForm();
 
   if (!first_name || !last_name) {
-    alert("First and last name are required.");
+    showStatusMessage("First and last name are required.", "error");
     return;
   }
 

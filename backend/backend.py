@@ -118,6 +118,7 @@ def on_startup() -> None:
 origins = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
+    "https://crud-contact-list-ui.onrender.com",
 ]
 
 app.add_middleware(

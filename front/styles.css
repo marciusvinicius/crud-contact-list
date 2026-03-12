@@ -159,6 +159,12 @@ body {
   color: #166534;
 }
 
+.status-message.error {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
 .field-group {
   display: flex;
   flex-direction: column;
