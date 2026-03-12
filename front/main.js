@@ -89,7 +89,7 @@ function clearAllSelections() {
 function showStatusMessage(message, type = "success", timeoutMs = 2000) {
   if (!statusMessageEl) return;
   statusMessageEl.textContent = message;
-  statusMessageEl.classList.remove("hidden", "success");
+  statusMessageEl.classList.remove("hidden", "success", "error");
   if (type) {
     statusMessageEl.classList.add(type);
   }
