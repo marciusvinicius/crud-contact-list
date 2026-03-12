@@ -24,7 +24,9 @@ This uses the `/contacts` endpoint and fills the database.
 ### Frontend
 
 - **Open UI**:
-  - The simplest option is to use a static file server from this directory, for example:
+  - The simplest option is to use a static file server from this directory
+  - Using docker compose:
+    - docker compose up --build 
 
 The UI calls the FastAPI backend at `http://localhost:8000`:
 
