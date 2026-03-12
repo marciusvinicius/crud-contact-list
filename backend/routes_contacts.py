@@ -51,7 +51,7 @@ def list_contacts(
                 WHERE lower(c.first_name) LIKE ?
                    OR lower(c.last_name) LIKE ?
                    OR lower(e.email) LIKE ?
-                ORDER BY c.last_name, c.first_name, c.id
+                ORDER BY c.first_name, c.last_name, c.id
                 LIMIT ? OFFSET ?
                 """,
                 (q_like, q_like, q_like, limit, offset),
@@ -61,7 +61,7 @@ def list_contacts(
                 """
                 SELECT id, first_name, last_name
                 FROM contacts
-                ORDER BY last_name, first_name, id
+                ORDER BY first_name, last_name, id
                 LIMIT ? OFFSET ?
                 """,
                 (limit, offset),
@@ -186,7 +186,7 @@ def export_contacts(ids: List[int] = Query(...)) -> StreamingResponse:
             SELECT id, first_name, last_name
             FROM contacts
             WHERE id IN ({placeholders})
-            ORDER BY last_name, first_name, id
+            ORDER BY first_name, last_name, id
             """,
             ids,
         ).fetchall()
