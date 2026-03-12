@@ -255,20 +255,68 @@ function addEmailRow(value = "") {
   const li = document.createElement("li");
   li.className = "email-item";
 
+  const display = document.createElement("span");
+  display.className = "email-display";
+  display.textContent = value || "";
+
   const input = document.createElement("input");
   input.type = "email";
   input.value = value;
+  input.className = "email-input";
+
+  // If there is a value, show it as a span.
+  // If empty (new row), show the input directly.
+  if (value) {
+    display.style.display = "";
+    input.style.display = "none";
+  } else {
+    display.style.display = "none";
+    input.style.display = "";
+    input.focus();
+  }
+
+  function showInput() {
+    display.style.display = "none";
+    input.style.display = "";
+    input.focus();
+  }
+
+  function commitEdit() {
+    const v = input.value.trim();
+    input.value = v;
+
+    // If empty after edit, keep it as an input (no span).
+    if (!v) {
+      display.textContent = "";
+      display.style.display = "none";
+      input.style.display = "";
+      return;
+    }
+
+    display.textContent = v;
+    display.style.display = "";
+    input.style.display = "none";
+  }
+
+  display.addEventListener("click", showInput);
+
+  input.addEventListener("blur", commitEdit);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      input.blur();
+    }
+  });
 
   const removeBtn = document.createElement("button");
   removeBtn.className = "email-remove-btn";
   removeBtn.textContent = "Delete";
   removeBtn.addEventListener("click", () => {
     emailsListEl.removeChild(li);
-    if (emailsListEl.children.length === 0) {
-      emailsListEl.classList.add("hidden");
-    }
+    if (emailsListEl.children.length === 0) emailsListEl.classList.add("hidden");
   });
 
+  li.appendChild(display);
   li.appendChild(input);
   li.appendChild(removeBtn);
   emailsListEl.appendChild(li);

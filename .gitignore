@@ -13,4 +13,4 @@ backend/.env.test
 backend/.env.production
 backend/.env.local
 backend/.env.development.local
-backend/*.db
+*.db

@@ -224,14 +224,32 @@ body {
   position: relative;
 }
 
-.email-item input {
+.email-display {
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-height: 1.5em;
+}
+
+.email-display:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.email-display-placeholder {
+  color: #9ca3af;
+}
+
+.email-item .email-input {
   padding: 7px 9px;
   border-radius: 8px;
   border: 1px solid #d1d5db;
   font-size: 0.9rem;
 }
 
-.email-item input:focus {
+.email-item .email-input:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);

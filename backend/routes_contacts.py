@@ -13,6 +13,26 @@ from .database import get_connection, row_to_contact, get_contact_or_404
 router = APIRouter()
 
 
+def _normalize_name(value: str, field_name: str) -> str:
+    cleaned = (value or "").strip()
+    if not cleaned:
+        raise HTTPException(
+            status_code=422,
+            detail=f"{field_name} must not be empty.",
+        )
+    return cleaned
+
+
+def _normalize_emails(emails: List[str]) -> List[str]:
+    cleaned = [e.strip() for e in emails if e and e.strip()]
+    if not cleaned:
+        raise HTTPException(
+            status_code=422,
+            detail="At least one valid email is required.",
+        )
+    return cleaned
+
+
 @router.get("/contacts", response_model=List[Contact])
 def list_contacts(
     q: Optional[str] = Query(default=None),
@@ -54,15 +74,19 @@ def list_contacts(
 
 @router.post("/contacts", response_model=Contact, status_code=201)
 def create_contact(contact_in: ContactCreate) -> Contact:
+    first_name = _normalize_name(contact_in.first_name, "first_name")
+    last_name = _normalize_name(contact_in.last_name, "last_name")
+    emails = _normalize_emails([str(e) for e in contact_in.emails])
+
     conn = get_connection()
     try:
         cur = conn.cursor()
         cur.execute(
             "INSERT INTO contacts (first_name, last_name) VALUES (?, ?)",
-            (contact_in.first_name, contact_in.last_name),
+            (first_name, last_name),
         )
         contact_id = cur.lastrowid
-        for email in contact_in.emails:
+        for email in emails:
             cur.execute(
                 "INSERT INTO emails (contact_id, email) VALUES (?, ?)",
                 (contact_id, email),
@@ -96,8 +120,15 @@ def update_contact(contact_id: int, contact_update: ContactUpdate) -> Contact:
 
         data = contact_update.dict(exclude_unset=True)
 
-        first_name = data.get("first_name", row["first_name"])
-        last_name = data.get("last_name", row["last_name"])
+        if "first_name" in data:
+            first_name = _normalize_name(data["first_name"], "first_name")
+        else:
+            first_name = row["first_name"]
+
+        if "last_name" in data:
+            last_name = _normalize_name(data["last_name"], "last_name")
+        else:
+            last_name = row["last_name"]
 
         conn.execute(
             "UPDATE contacts SET first_name = ?, last_name = ? WHERE id = ?",
@@ -105,8 +136,9 @@ def update_contact(contact_id: int, contact_update: ContactUpdate) -> Contact:
         )
 
         if "emails" in data:
+            emails = _normalize_emails([str(e) for e in data["emails"] or []])
             conn.execute("DELETE FROM emails WHERE contact_id = ?", (contact_id,))
-            for email in data["emails"] or []:
+            for email in emails:
                 conn.execute(
                     "INSERT INTO emails (contact_id, email) VALUES (?, ?)",
                     (contact_id, email),
