@@ -80,3 +80,5 @@ The UI calls the FastAPI backend at `http://localhost:8000`:
 - Replace SQLite with a networked database (PostgreSQL) for higher concurrency and scale.
 - Add more fields (phone numbers, notes, tags) and richer search/filtering.
 - Add backend rate limiting and better error payloads (error codes, fields) for API clients.
+- Add github workflow to deploy on Render only after run all tests.
+- Add more mobile-friendly interface
