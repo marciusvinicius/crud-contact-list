@@ -62,14 +62,35 @@ async function fetchContacts(query = "", reset = false) {
 
   renderContactsList();
   if (contacts.length === 0 && query) {
-    clearForm();
+    // No matches for this search; keep any multi-selected contacts,
+    // but clear the focused contact and form.
+    selectedContactId = null;
+    selectionAnchorId = null;
+    firstNameInput.value = "";
+    lastNameInput.value = "";
+    renderEmails([]);
+    if (deleteContactBtn) {
+      deleteContactBtn.classList.add("hidden");
+    }
+    renderContactsList();
     isLoadingContacts = false;
     return;
   }
   if (selectedContactId) {
     const stillExists = contacts.find((c) => c.id === selectedContactId);
     if (!stillExists) {
-      clearForm();
+      // When the current selection is not in the filtered list anymore
+      // (e.g. after search or clearing search), keep the multi-selection
+      // state but clear the focused contact and form.
+      selectedContactId = null;
+      selectionAnchorId = null;
+      firstNameInput.value = "";
+      lastNameInput.value = "";
+      renderEmails([]);
+      if (deleteContactBtn) {
+        deleteContactBtn.classList.add("hidden");
+      }
+      renderContactsList();
     }
   }
   isLoadingContacts = false;

@@ -82,3 +82,4 @@ The UI calls the FastAPI backend at `http://localhost:8000`:
 - Add backend rate limiting and better error payloads (error codes, fields) for API clients.
 - Add github workflow to deploy on Render only after run all tests.
 - Add more mobile-friendly interface
+- Make clear for contacts that are outside of the pagination offset are selected
