@@ -6,7 +6,7 @@ COPY backend/requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY backend/ /app/backend
+ADD backend/ /app/backend
 
 RUN chmod +x backend/entrypoint.sh
 

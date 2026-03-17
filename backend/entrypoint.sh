@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload &
 UVICORN_PID=$!
 
 # Give the server a moment to start before seeding

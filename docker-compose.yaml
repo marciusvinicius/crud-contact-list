@@ -21,6 +21,9 @@ services:
       - contacts-network
     environment:
       - API_BASE=http://backend:8000
+    volumes:
+      - ./front/nginx.conf:/etc/nginx/nginx.conf
+      - ./front/:/usr/share/nginx/html
     depends_on:
       - backend
   

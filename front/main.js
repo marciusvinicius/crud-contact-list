@@ -1,5 +1,5 @@
-const API_BASE = "https://crud-contact-list-2.onrender.com"
-//const API_BASE = "http://localhost:8000"
+//const API_BASE = "https://crud-contact-list-2.onrender.com"
+const API_BASE = "http://localhost:8000"
 const contactsListEl = document.getElementById("contacts-list");
 const addContactBtn = document.getElementById("add-contact-btn");
 const firstNameInput = document.getElementById("first-name");
