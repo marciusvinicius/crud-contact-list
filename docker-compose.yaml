@@ -10,6 +10,9 @@ services:
       - API_BASE=http://backend:8000
     networks:
       - contacts-network
+    volumes:
+      - ./backend/contacts.db:/app/backend/contacts.db
+      - ./backend/:/app/backend/
   front:
     build:
       context: .
